@@ -47,13 +47,14 @@ const client = new MongoClient(uri, {
 });
 
 app.get('/', (req, res) => {
-  res.send('Basic server is running!');
+  res.send('Red Wave server is running!');
 });
 
 async function run() {
   try {
-    const database = client.db('basicDB');
-    const productCollection = database.collection('productCollection');
+    const database = client.db('redWave');
+    const districtsCollection = database.collection('districts');
+    const upazilasCollection = database.collection('upazilas');
 
     // Auth Related API
 
@@ -65,7 +66,23 @@ async function run() {
       res.send({ token });
     });
 
-    // Services Related API
+    // Districts & Upazila Related API
+
+    app.get('/districts', async (req, res) => {
+      const result = await districtsCollection
+        .find()
+        .sort({ name: 1 })
+        .toArray();
+      res.send(result);
+    });
+
+    app.get('/upazilas', async (req, res) => {
+      const result = await upazilasCollection
+        .find()
+        .sort({ name: 1 })
+        .toArray();
+      res.send(result);
+    });
 
     console.log(
       'Pinged your deployment. You successfully connected to MongoDB!'
@@ -76,5 +93,5 @@ async function run() {
 run().catch(console.dir);
 
 app.listen(port, () => {
-  console.log(`Basic server is running on port ${port}`);
+  console.log(`Red Wave is running on port ${port}`);
 });
