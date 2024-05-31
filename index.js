@@ -55,6 +55,7 @@ async function run() {
     const database = client.db('redWave');
     const districtsCollection = database.collection('districts');
     const upazilasCollection = database.collection('upazilas');
+    const usersCollection = database.collection('users');
 
     // Auth Related API
 
@@ -64,6 +65,29 @@ async function run() {
         expiresIn: '1h',
       });
       res.send({ token });
+    });
+
+    // Users Data related API
+
+    app.put('/users', async (req, res) => {
+      const user = req.body;
+
+      const filter = { email: user?.email };
+
+      const options = { upsert: true };
+
+      const updateDoc = {
+        $set: {
+          ...user,
+        },
+      };
+      const result = await usersCollection.updateOne(
+        filter,
+        updateDoc,
+        options
+      );
+
+      res.send(result);
     });
 
     // Districts & Upazila Related API
