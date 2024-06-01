@@ -56,6 +56,7 @@ async function run() {
     const districtsCollection = database.collection('districts');
     const upazilasCollection = database.collection('upazilas');
     const usersCollection = database.collection('users');
+    const donationRequestsCollection = database.collection('donationRequests');
 
     // Auth Related API
 
@@ -68,6 +69,13 @@ async function run() {
     });
 
     // Users Data related API
+
+    app.get('/users/:email', async (req, res) => {
+      const email = req.params.email;
+      const filter = { email: email };
+      const result = await usersCollection.findOne(filter);
+      res.send(result);
+    });
 
     app.put('/users', async (req, res) => {
       const user = req.body;
@@ -105,6 +113,24 @@ async function run() {
         .find()
         .sort({ name: 1 })
         .toArray();
+      res.send(result);
+    });
+
+    // Donation Request Related API
+
+    app.get('/donation-requests/:email', async (req, res) => {
+      const email = req.params.email;
+      const filter = {
+        requester_email: email,
+      };
+      const result = await donationRequestsCollection.find(filter).toArray();
+      res.send(result);
+    });
+
+    app.post('/donation-requests', async (req, res) => {
+      const donationData = req.body;
+
+      const result = await donationRequestsCollection.insertOne(donationData);
       res.send(result);
     });
 
