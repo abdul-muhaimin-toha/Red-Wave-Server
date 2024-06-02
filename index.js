@@ -164,7 +164,12 @@ async function run() {
     // BLog Content Related API
 
     app.get('/blogs', async (req, res) => {
-      const result = await contentsCollection.find().toArray();
+      const query = req.query;
+      let filter = {};
+      if (query.status) {
+        filter.status = query.status;
+      }
+      const result = await contentsCollection.find(filter).toArray();
       res.send(result);
     });
 
