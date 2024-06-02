@@ -57,6 +57,7 @@ async function run() {
     const upazilasCollection = database.collection('upazilas');
     const usersCollection = database.collection('users');
     const donationRequestsCollection = database.collection('donationRequests');
+    const contentsCollection = database.collection('contents');
 
     // Auth Related API
 
@@ -157,6 +158,14 @@ async function run() {
       const donationData = req.body;
 
       const result = await donationRequestsCollection.insertOne(donationData);
+      res.send(result);
+    });
+
+    // BLog Content Related API
+
+    app.post('/blogs', async (req, res) => {
+      const blog = req.body;
+      const result = await contentsCollection.insertOne(blog);
       res.send(result);
     });
 
