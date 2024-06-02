@@ -163,9 +163,36 @@ async function run() {
 
     // BLog Content Related API
 
+    app.get('/blogs', async (req, res) => {
+      const result = await contentsCollection.find().toArray();
+      res.send(result);
+    });
+
     app.post('/blogs', async (req, res) => {
       const blog = req.body;
       const result = await contentsCollection.insertOne(blog);
+      res.send(result);
+    });
+
+    app.patch('/blogs', async (req, res) => {
+      const blog = req.body;
+
+      const filter = { _id: new ObjectId(blog._id) };
+
+      const updateDoc = {
+        $set: {
+          status: blog.status,
+        },
+      };
+
+      const result = await contentsCollection.updateOne(filter, updateDoc);
+      res.send(result);
+    });
+
+    app.delete('/blogs/:id', async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const result = await contentsCollection.deleteOne(filter);
       res.send(result);
     });
 
