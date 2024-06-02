@@ -77,6 +77,16 @@ async function run() {
       res.send(result);
     });
 
+    app.get('/users/', async (req, res) => {
+      const query = req.query;
+      let filter = {};
+      if (query.status) {
+        filter.status = query.status;
+      }
+      const result = await usersCollection.find(filter).toArray();
+      res.send(result);
+    });
+
     app.put('/users', async (req, res) => {
       const user = req.body;
 
@@ -95,6 +105,22 @@ async function run() {
         options
       );
 
+      res.send(result);
+    });
+
+    app.patch('/users', async (req, res) => {
+      const user = req.body;
+
+      const filter = { _id: new ObjectId(user._id) };
+
+      const updateDoc = {
+        $set: {
+          status: user.status,
+          role: user.role,
+        },
+      };
+
+      const result = await usersCollection.updateOne(filter, updateDoc);
       res.send(result);
     });
 
