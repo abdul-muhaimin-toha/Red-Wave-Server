@@ -145,12 +145,33 @@ async function run() {
 
     // Donation Request Related API
 
+    app.get('/donation-request-single/:id', async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const result = await donationRequestsCollection.findOne(filter);
+      res.send(result);
+    });
+
     app.get('/donation-requests/:email', async (req, res) => {
+      const limit = +req.query.limit;
+      const status = req.query.status;
       const email = req.params.email;
-      const filter = {
-        requester_email: email,
-      };
-      const result = await donationRequestsCollection.find(filter).toArray();
+      let filter = {};
+      if (status) {
+        filter = {
+          requester_email: email,
+          donation_status: status,
+        };
+      } else {
+        filter = {
+          requester_email: email,
+        };
+      }
+
+      const result = await donationRequestsCollection
+        .find(filter)
+        .limit(limit)
+        .toArray();
       res.send(result);
     });
 
@@ -158,6 +179,31 @@ async function run() {
       const donationData = req.body;
 
       const result = await donationRequestsCollection.insertOne(donationData);
+      res.send(result);
+    });
+
+    app.put('/donation-request-single', async (req, res) => {
+      const donationRequest = req.body;
+
+      const filter = { requester_email: donationRequest?.requester_email };
+
+      const updateDoc = {
+        $set: {
+          ...donationRequest,
+        },
+      };
+      const result = await donationRequestsCollection.updateOne(
+        filter,
+        updateDoc
+      );
+
+      res.send(result);
+    });
+
+    app.delete('/donation-requests/:id', async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const result = await donationRequestsCollection.deleteOne(filter);
       res.send(result);
     });
 
