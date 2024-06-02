@@ -152,6 +152,18 @@ async function run() {
       res.send(result);
     });
 
+    app.get('/donation-requests', async (req, res) => {
+      const status = req.query.status;
+
+      let filter = {};
+      if (status) {
+        filter = { donation_status: status };
+      }
+
+      const result = await donationRequestsCollection.find(filter).toArray();
+      res.send(result);
+    });
+
     app.get('/donation-requests/:email', async (req, res) => {
       const limit = +req.query.limit;
       const status = req.query.status;
