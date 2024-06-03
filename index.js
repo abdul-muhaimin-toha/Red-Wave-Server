@@ -235,6 +235,25 @@ async function run() {
       res.send(result);
     });
 
+    app.patch('/blood-donation-apply', async (req, res) => {
+      const newData = req.body;
+      const filter = { _id: new ObjectId(newData.id) };
+
+      const updateDoc = {
+        $set: {
+          donation_status: newData.donation_status,
+          donor_name: newData.donor_name,
+          donor_email: newData.donor_email,
+        },
+      };
+
+      const result = await donationRequestsCollection.updateOne(
+        filter,
+        updateDoc
+      );
+      res.send(result);
+    });
+
     app.delete('/donation-requests/:id', async (req, res) => {
       const id = req.params.id;
       const filter = { _id: new ObjectId(id) };
