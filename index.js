@@ -168,6 +168,13 @@ async function run() {
       res.send(result);
     });
 
+    app.get('/pending-donation-requests', async (req, res) => {
+      const result = await donationRequestsCollection
+        .find({ donation_status: 'pending' })
+        .toArray();
+      res.send(result);
+    });
+
     app.get('/donation-requests', async (req, res) => {
       const status = req.query.status;
 
