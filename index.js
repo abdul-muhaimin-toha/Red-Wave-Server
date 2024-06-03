@@ -78,11 +78,27 @@ async function run() {
       res.send(result);
     });
 
-    app.get('/users/', async (req, res) => {
+    app.get('/users', async (req, res) => {
       const query = req.query;
       let filter = {};
       if (query.status) {
         filter.status = query.status;
+      }
+      const result = await usersCollection.find(filter).toArray();
+      res.send(result);
+    });
+
+    app.get('/users-by-search', async (req, res) => {
+      const bloodGroup = req.query.bloodGroup;
+      const district = req.query.district;
+      const upazila = req.query.upazila;
+      let filter = {};
+      if (bloodGroup || district || upazila) {
+        filter = {
+          bloodGroup: bloodGroup,
+          district: district,
+          upazila: upazila,
+        };
       }
       const result = await usersCollection.find(filter).toArray();
       res.send(result);
