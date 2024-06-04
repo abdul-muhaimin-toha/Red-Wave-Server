@@ -280,6 +280,15 @@ async function run() {
       res.send(result);
     });
 
+    app.get('/blogs/:id', async (req, res) => {
+      const id = req.params.id;
+      const result = await contentsCollection.findOne({
+        _id: new ObjectId(id),
+      });
+
+      res.send(result);
+    });
+
     app.post('/blogs', async (req, res) => {
       const blog = req.body;
       const result = await contentsCollection.insertOne(blog);
