@@ -27,11 +27,14 @@ const verifyToken = (req, res, next) => {
   if (!req.headers.authorization) {
     return res.status(401).send({ message: 'Unauthorized access' });
   }
+
   const token = req.headers.authorization.split(' ')[1];
+
   jwt.verify(token, process.env.TOKEN_SECRET, (err, decoded) => {
     if (err) {
       return res.status(401).send({ message: 'Unauthorized access' });
     }
+
     req.decoded = decoded;
     next();
   });
@@ -73,7 +76,7 @@ async function run() {
 
     // Payment Related API
 
-    app.post('/create-payment-intent', async (req, res) => {
+    app.post('/create-payment-intent', verifyToken, async (req, res) => {
       const amount = req.body.amount;
       const amountInCent = parseFloat(amount) * 100;
 
@@ -90,7 +93,7 @@ async function run() {
       });
     });
 
-    app.post('/funds', async (req, res) => {
+    app.post('/funds', verifyToken, async (req, res) => {
       const document = req.body;
 
       const result = await fundsCollection.insertOne(document);
@@ -99,14 +102,14 @@ async function run() {
 
     // Users Data related API
 
-    app.get('/users/:email', async (req, res) => {
+    app.get('/users/:email', verifyToken, async (req, res) => {
       const email = req.params.email;
       const filter = { email: email };
       const result = await usersCollection.findOne(filter);
       res.send(result);
     });
 
-    app.get('/users', async (req, res) => {
+    app.get('/users', verifyToken, async (req, res) => {
       const query = req.query;
       let filter = {};
       if (query.status) {
@@ -132,7 +135,7 @@ async function run() {
       res.send(result);
     });
 
-    app.put('/users', async (req, res) => {
+    app.put('/users', verifyToken, async (req, res) => {
       const user = req.body;
 
       const filter = { email: user?.email };
@@ -153,7 +156,7 @@ async function run() {
       res.send(result);
     });
 
-    app.patch('/users', async (req, res) => {
+    app.patch('/users', verifyToken, async (req, res) => {
       const user = req.body;
 
       const filter = { _id: new ObjectId(user._id) };
@@ -189,8 +192,9 @@ async function run() {
 
     // Donation Request Related API
 
-    app.get('/donation-request-single/:id', async (req, res) => {
+    app.get('/donation-request-single/:id', verifyToken, async (req, res) => {
       const id = req.params.id;
+      console.log('ffff');
       const filter = { _id: new ObjectId(id) };
       const result = await donationRequestsCollection.findOne(filter);
       res.send(result);
@@ -203,7 +207,7 @@ async function run() {
       res.send(result);
     });
 
-    app.get('/donation-requests', async (req, res) => {
+    app.get('/donation-requests', verifyToken, async (req, res) => {
       const status = req.query.status;
 
       let filter = {};
@@ -215,7 +219,7 @@ async function run() {
       res.send(result);
     });
 
-    app.get('/donation-requests/:email', async (req, res) => {
+    app.get('/donation-requests/:email', verifyToken, async (req, res) => {
       const limit = +req.query.limit;
       const status = req.query.status;
       const email = req.params.email;
@@ -238,14 +242,14 @@ async function run() {
       res.send(result);
     });
 
-    app.post('/donation-requests', async (req, res) => {
+    app.post('/donation-requests', verifyToken, async (req, res) => {
       const donationData = req.body;
 
       const result = await donationRequestsCollection.insertOne(donationData);
       res.send(result);
     });
 
-    app.put('/donation-request-single', async (req, res) => {
+    app.put('/donation-request-single', verifyToken, async (req, res) => {
       const donationRequest = req.body;
 
       const filter = { requester_email: donationRequest?.requester_email };
@@ -263,7 +267,7 @@ async function run() {
       res.send(result);
     });
 
-    app.patch('/blood-donation-apply', async (req, res) => {
+    app.patch('/blood-donation-apply', verifyToken, async (req, res) => {
       const newData = req.body;
       const filter = { _id: new ObjectId(newData.id) };
 
@@ -282,7 +286,7 @@ async function run() {
       res.send(result);
     });
 
-    app.delete('/donation-requests/:id', async (req, res) => {
+    app.delete('/donation-requests/:id', verifyToken, async (req, res) => {
       const id = req.params.id;
       const filter = { _id: new ObjectId(id) };
       const result = await donationRequestsCollection.deleteOne(filter);
@@ -291,7 +295,7 @@ async function run() {
 
     // BLog Content Related API
 
-    app.get('/blogs', async (req, res) => {
+    app.get('/blogs', verifyToken, async (req, res) => {
       const query = req.query;
       let filter = {};
       if (query.status) {
@@ -317,13 +321,13 @@ async function run() {
       res.send(result);
     });
 
-    app.post('/blogs', async (req, res) => {
+    app.post('/blogs', verifyToken, async (req, res) => {
       const blog = req.body;
       const result = await contentsCollection.insertOne(blog);
       res.send(result);
     });
 
-    app.patch('/blogs', async (req, res) => {
+    app.patch('/blogs', verifyToken, async (req, res) => {
       const blog = req.body;
 
       const filter = { _id: new ObjectId(blog._id) };
@@ -338,7 +342,7 @@ async function run() {
       res.send(result);
     });
 
-    app.delete('/blogs/:id', async (req, res) => {
+    app.delete('/blogs/:id', verifyToken, async (req, res) => {
       const id = req.params.id;
       const filter = { _id: new ObjectId(id) };
       const result = await contentsCollection.deleteOne(filter);
@@ -346,7 +350,7 @@ async function run() {
     });
 
     // Funds Related Related API
-    app.get('/funds', async (req, res) => {
+    app.get('/funds', verifyToken, async (req, res) => {
       const result = await fundsCollection.find().toArray();
       res.send(result);
     });
