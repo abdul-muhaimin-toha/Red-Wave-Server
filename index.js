@@ -273,6 +273,13 @@ async function run() {
       res.send(result);
     });
 
+    app.get('/published-blogs', async (req, res) => {
+      const result = await contentsCollection
+        .find({ status: 'published' })
+        .toArray();
+      res.send(result);
+    });
+
     app.post('/blogs', async (req, res) => {
       const blog = req.body;
       const result = await contentsCollection.insertOne(blog);
