@@ -6,6 +6,7 @@ const cookieParser = require('cookie-parser');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const app = express();
 const port = process.env.PORT || 3000;
+const stripe = require('stripe')(process.env.STRIPE_SK);
 
 const corsOptions = {
   origin: ['http://localhost:5173'],
@@ -58,6 +59,7 @@ async function run() {
     const usersCollection = database.collection('users');
     const donationRequestsCollection = database.collection('donationRequests');
     const contentsCollection = database.collection('contents');
+    const fundsCollection = database.collection('funds');
 
     // Auth Related API
 
@@ -67,6 +69,32 @@ async function run() {
         expiresIn: '1h',
       });
       res.send({ token });
+    });
+
+    // Payment Related API
+
+    app.post('/create-payment-intent', async (req, res) => {
+      const amount = req.body.amount;
+      const amountInCent = parseFloat(amount) * 100;
+
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: amountInCent,
+        currency: 'usd',
+        automatic_payment_methods: {
+          enabled: true,
+        },
+      });
+
+      res.send({
+        clientSecret: paymentIntent.client_secret,
+      });
+    });
+
+    app.post('/funds', async (req, res) => {
+      const document = req.body;
+
+      const result = await fundsCollection.insertOne(document);
+      res.send(result);
     });
 
     // Users Data related API
@@ -316,6 +344,8 @@ async function run() {
       const result = await contentsCollection.deleteOne(filter);
       res.send(result);
     });
+
+    // Funds Related Related API
 
     console.log(
       'Pinged your deployment. You successfully connected to MongoDB!'
