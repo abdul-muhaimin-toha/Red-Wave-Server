@@ -376,6 +376,33 @@ async function run() {
       res.send(result);
     });
 
+    // Total Counts Related API
+    app.get('/total-statistics', verifyToken, async (req, res) => {
+      const totalUsers = await usersCollection.estimatedDocumentCount();
+      const totalDonationRequest =
+        await donationRequestsCollection.estimatedDocumentCount();
+
+      const totalAmount = await fundsCollection
+        .aggregate([
+          {
+            $group: {
+              _id: null,
+              totalAmount: { $sum: '$amount' },
+            },
+          },
+        ])
+        .toArray();
+
+      const totalFunds =
+        totalAmount.length > 0 ? totalAmount[0].totalAmount : 0;
+
+      res.send({
+        'total-users': totalUsers,
+        'total-donation-request': totalDonationRequest,
+        'total-funds': totalFunds,
+      });
+    });
+
     console.log(
       'Pinged your deployment. You successfully connected to MongoDB!'
     );
