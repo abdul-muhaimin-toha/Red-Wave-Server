@@ -135,7 +135,7 @@ async function run() {
       res.send(result);
     });
 
-    app.put('/users', verifyToken, async (req, res) => {
+    app.put('/users', async (req, res) => {
       const user = req.body;
 
       const filter = { email: user?.email };
@@ -194,7 +194,6 @@ async function run() {
 
     app.get('/donation-request-single/:id', verifyToken, async (req, res) => {
       const id = req.params.id;
-      console.log('ffff');
       const filter = { _id: new ObjectId(id) };
       const result = await donationRequestsCollection.findOne(filter);
       res.send(result);
@@ -219,28 +218,31 @@ async function run() {
       res.send(result);
     });
 
-    app.get('/donation-requests/:email', verifyToken, async (req, res) => {
-      const limit = +req.query.limit;
-      const status = req.query.status;
-      const email = req.params.email;
-      let filter = {};
-      if (status) {
-        filter = {
-          requester_email: email,
-          donation_status: status,
-        };
-      } else {
-        filter = {
-          requester_email: email,
-        };
+    app.get(
+      '/donation-requests-for-user/:email',
+      verifyToken,
+      async (req, res) => {
+        const limit = +req.query.limit;
+        const status = req.query.status;
+        const email = req.params.email;
+        let filter = {};
+        if (status) {
+          filter = {
+            requester_email: email,
+            donation_status: status,
+          };
+        } else {
+          filter = {
+            requester_email: email,
+          };
+        }
+        const result = await donationRequestsCollection
+          .find(filter)
+          .limit(limit)
+          .toArray();
+        res.send(result);
       }
-
-      const result = await donationRequestsCollection
-        .find(filter)
-        .limit(limit)
-        .toArray();
-      res.send(result);
-    });
+    );
 
     app.post('/donation-requests', verifyToken, async (req, res) => {
       const donationData = req.body;
@@ -249,16 +251,18 @@ async function run() {
       res.send(result);
     });
 
-    app.put('/donation-request-single', verifyToken, async (req, res) => {
+    app.put('/donation-request-single/:id', verifyToken, async (req, res) => {
+      const id = req.params.id;
       const donationRequest = req.body;
 
-      const filter = { requester_email: donationRequest?.requester_email };
+      const filter = { _id: new ObjectId(id) };
 
       const updateDoc = {
         $set: {
           ...donationRequest,
         },
       };
+
       const result = await donationRequestsCollection.updateOne(
         filter,
         updateDoc
@@ -276,6 +280,23 @@ async function run() {
           donation_status: newData.donation_status,
           donor_name: newData.donor_name,
           donor_email: newData.donor_email,
+        },
+      };
+
+      const result = await donationRequestsCollection.updateOne(
+        filter,
+        updateDoc
+      );
+      res.send(result);
+    });
+
+    app.patch('/blood-donation-updated', verifyToken, async (req, res) => {
+      const newData = req.body;
+      const filter = { _id: new ObjectId(newData._id) };
+
+      const updateDoc = {
+        $set: {
+          donation_status: newData.donation_status,
         },
       };
 
