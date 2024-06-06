@@ -192,6 +192,19 @@ async function run() {
 
     // Donation Request Related API
 
+    app.get('/recent-donation-requests', async (req, res) => {
+      const filter = {
+        donation_date: { $gte: new Date(Date.now() - 86400000).toISOString() },
+      };
+
+      const result = await donationRequestsCollection
+        .find(filter)
+        .limit(6)
+        .sort({ donation_date: 1 })
+        .toArray();
+      res.send(result);
+    });
+
     app.get('/donation-request-single/:id', verifyToken, async (req, res) => {
       const id = req.params.id;
       const filter = { _id: new ObjectId(id) };
