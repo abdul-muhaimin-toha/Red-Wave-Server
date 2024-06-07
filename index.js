@@ -64,6 +64,30 @@ async function run() {
     const contentsCollection = database.collection('contents');
     const fundsCollection = database.collection('funds');
 
+    // Varify Admin And Volunteer MiddleWare
+
+    const verifyAdmin = async (req, res, next) => {
+      const user = req.decoded;
+      const query = { email: user.email };
+      const result = await usersCollection.findOne(query);
+
+      if (!result || result.role !== 'admin') {
+        return res.status(401).send({ message: 'unauthorized access!' });
+      }
+      next();
+    };
+
+    const verifyAdminOrVolunteer = async (req, res, next) => {
+      const user = req.decoded;
+      const query = { email: user.email };
+      const result = await usersCollection.findOne(query);
+
+      if (!result || (result.role !== 'admin' && result.role !== 'volunteer')) {
+        return res.status(401).send({ message: 'unauthorized access!' });
+      }
+      next();
+    };
+
     // Auth Related API
 
     app.post('/jwt', async (req, res) => {
@@ -76,7 +100,7 @@ async function run() {
 
     // Payment Related API
 
-    app.post('/create-payment-intent', verifyToken, async (req, res) => {
+    app.post('/create-payment-intent', async (req, res) => {
       const amount = req.body.amount;
       const amountInCent = parseFloat(amount) * 100;
 
@@ -109,7 +133,7 @@ async function run() {
       res.send(result);
     });
 
-    app.get('/users', verifyToken, async (req, res) => {
+    app.get('/users', verifyToken, verifyAdmin, async (req, res) => {
       const query = req.query;
       let filter = {};
       if (query.status) {
@@ -156,7 +180,7 @@ async function run() {
       res.send(result);
     });
 
-    app.patch('/users', verifyToken, async (req, res) => {
+    app.patch('/users', verifyToken, verifyAdmin, async (req, res) => {
       const user = req.body;
 
       const filter = { _id: new ObjectId(user._id) };
@@ -219,17 +243,22 @@ async function run() {
       res.send(result);
     });
 
-    app.get('/donation-requests', verifyToken, async (req, res) => {
-      const status = req.query.status;
+    app.get(
+      '/donation-requests',
+      verifyToken,
+      verifyAdminOrVolunteer,
+      async (req, res) => {
+        const status = req.query.status;
 
-      let filter = {};
-      if (status) {
-        filter = { donation_status: status };
+        let filter = {};
+        if (status) {
+          filter = { donation_status: status };
+        }
+
+        const result = await donationRequestsCollection.find(filter).toArray();
+        res.send(result);
       }
-
-      const result = await donationRequestsCollection.find(filter).toArray();
-      res.send(result);
-    });
+    );
 
     app.get(
       '/donation-requests-for-user/:email',
@@ -329,7 +358,7 @@ async function run() {
 
     // BLog Content Related API
 
-    app.get('/blogs', verifyToken, async (req, res) => {
+    app.get('/blogs', verifyToken, verifyAdminOrVolunteer, async (req, res) => {
       const query = req.query;
       let filter = {};
       if (query.status) {
@@ -355,13 +384,18 @@ async function run() {
       res.send(result);
     });
 
-    app.post('/blogs', verifyToken, async (req, res) => {
-      const blog = req.body;
-      const result = await contentsCollection.insertOne(blog);
-      res.send(result);
-    });
+    app.post(
+      '/blogs',
+      verifyToken,
+      verifyAdminOrVolunteer,
+      async (req, res) => {
+        const blog = req.body;
+        const result = await contentsCollection.insertOne(blog);
+        res.send(result);
+      }
+    );
 
-    app.patch('/blogs', verifyToken, async (req, res) => {
+    app.patch('/blogs', verifyToken, verifyAdmin, async (req, res) => {
       const blog = req.body;
 
       const filter = { _id: new ObjectId(blog._id) };
@@ -376,7 +410,7 @@ async function run() {
       res.send(result);
     });
 
-    app.delete('/blogs/:id', verifyToken, async (req, res) => {
+    app.delete('/blogs/:id', verifyToken, verifyAdmin, async (req, res) => {
       const id = req.params.id;
       const filter = { _id: new ObjectId(id) };
       const result = await contentsCollection.deleteOne(filter);
@@ -390,31 +424,36 @@ async function run() {
     });
 
     // Total Counts Related API
-    app.get('/total-statistics', verifyToken, async (req, res) => {
-      const totalUsers = await usersCollection.estimatedDocumentCount();
-      const totalDonationRequest =
-        await donationRequestsCollection.estimatedDocumentCount();
+    app.get(
+      '/total-statistics',
+      verifyToken,
+      verifyAdminOrVolunteer,
+      async (req, res) => {
+        const totalUsers = await usersCollection.estimatedDocumentCount();
+        const totalDonationRequest =
+          await donationRequestsCollection.estimatedDocumentCount();
 
-      const totalAmount = await fundsCollection
-        .aggregate([
-          {
-            $group: {
-              _id: null,
-              totalAmount: { $sum: '$amount' },
+        const totalAmount = await fundsCollection
+          .aggregate([
+            {
+              $group: {
+                _id: null,
+                totalAmount: { $sum: '$amount' },
+              },
             },
-          },
-        ])
-        .toArray();
+          ])
+          .toArray();
 
-      const totalFunds =
-        totalAmount.length > 0 ? totalAmount[0].totalAmount : 0;
+        const totalFunds =
+          totalAmount.length > 0 ? totalAmount[0].totalAmount : 0;
 
-      res.send({
-        'total-users': totalUsers,
-        'total-donation-request': totalDonationRequest,
-        'total-funds': totalFunds,
-      });
-    });
+        res.send({
+          'total-users': totalUsers,
+          'total-donation-request': totalDonationRequest,
+          'total-funds': totalFunds,
+        });
+      }
+    );
 
     console.log(
       'Pinged your deployment. You successfully connected to MongoDB!'
