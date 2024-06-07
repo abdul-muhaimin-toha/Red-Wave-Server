@@ -266,7 +266,9 @@ async function run() {
       async (req, res) => {
         const limit = +req.query.limit;
         const status = req.query.status;
+        const currentPage = +req.query.currentPage;
         const email = req.params.email;
+        const skip = limit * currentPage;
         let filter = {};
         if (status) {
           filter = {
@@ -281,6 +283,7 @@ async function run() {
         const result = await donationRequestsCollection
           .find(filter)
           .limit(limit)
+          .skip(skip)
           .toArray();
         res.send(result);
       }
@@ -452,6 +455,29 @@ async function run() {
           'total-donation-request': totalDonationRequest,
           'total-funds': totalFunds,
         });
+      }
+    );
+
+    app.get(
+      '/total-donation-request-for-user/:email',
+      verifyToken,
+      async (req, res) => {
+        const status = req.query.status;
+        const email = req.params.email;
+        let filter = {};
+        if (status) {
+          filter = {
+            requester_email: email,
+            donation_status: status,
+          };
+        } else {
+          filter = {
+            requester_email: email,
+          };
+        }
+        const result = await donationRequestsCollection.countDocuments(filter);
+
+        res.send({ total: result });
       }
     );
 
