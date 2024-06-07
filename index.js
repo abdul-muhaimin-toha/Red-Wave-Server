@@ -9,7 +9,7 @@ const port = process.env.PORT || 3000;
 const stripe = require('stripe')(process.env.STRIPE_SK);
 
 const corsOptions = {
-  origin: ['http://localhost:5173'],
+  origin: ['http://localhost:5173', 'https://red-wave.netlify.app'],
   credentials: true,
 };
 
