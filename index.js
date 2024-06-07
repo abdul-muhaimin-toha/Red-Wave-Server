@@ -255,6 +255,8 @@ async function run() {
       verifyToken,
       verifyAdminOrVolunteer,
       async (req, res) => {
+        const postPerPage = +req.query.postPerPage;
+        const skip = +req.query.currentPage * postPerPage;
         const status = req.query.status;
 
         let filter = {};
@@ -262,7 +264,11 @@ async function run() {
           filter = { donation_status: status };
         }
 
-        const result = await donationRequestsCollection.find(filter).toArray();
+        const result = await donationRequestsCollection
+          .find(filter)
+          .limit(postPerPage)
+          .skip(skip)
+          .toArray();
         res.send(result);
       }
     );
@@ -497,6 +503,23 @@ async function run() {
       const result = await usersCollection.countDocuments(filter);
       res.send({ total: result });
     });
+
+    app.get(
+      '/total-donation-requests',
+      verifyToken,
+      verifyAdminOrVolunteer,
+      async (req, res) => {
+        const status = req.query.status;
+
+        let filter = {};
+        if (status) {
+          filter = { donation_status: status };
+        }
+
+        const result = await donationRequestsCollection.countDocuments(filter);
+        res.send({ total: result });
+      }
+    );
 
     console.log(
       'Pinged your deployment. You successfully connected to MongoDB!'
