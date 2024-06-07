@@ -134,12 +134,19 @@ async function run() {
     });
 
     app.get('/users', verifyToken, verifyAdmin, async (req, res) => {
+      const limit = +req.query.postPerPage;
+      const skip = +req.query.currentPage * limit;
+
       const query = req.query;
       let filter = {};
       if (query.status) {
         filter.status = query.status;
       }
-      const result = await usersCollection.find(filter).toArray();
+      const result = await usersCollection
+        .find(filter)
+        .limit(limit)
+        .skip(skip)
+        .toArray();
       res.send(result);
     });
 
@@ -480,6 +487,16 @@ async function run() {
         res.send({ total: result });
       }
     );
+
+    app.get('/total-users', verifyToken, verifyAdmin, async (req, res) => {
+      const query = req.query;
+      let filter = {};
+      if (query.status) {
+        filter.status = query.status;
+      }
+      const result = await usersCollection.countDocuments(filter);
+      res.send({ total: result });
+    });
 
     console.log(
       'Pinged your deployment. You successfully connected to MongoDB!'
