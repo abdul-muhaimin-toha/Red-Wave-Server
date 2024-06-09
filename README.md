@@ -1,24 +1,18 @@
 # Red Wave Server
 
-Admin Account:
-admin@gmail.com
-pass: 123123
+### Assignment_ID: assignment_category_0001
 
-Volunteer Account:
-Volunteer@gmail.com
-pass: 123123
+### Milestone: 12, Assignment: 12 (Red Wave). Project based assignment for Programming Hero course.
 
-User Account:
-user@gmail.com
-pass: 123123
+## Purpose
 
 Red Wave is a user-friendly blood donation platform designed to facilitate seamless connections between blood donors and recipients. The platform aims to streamline the blood donation process, making it more efficient and accessible for everyone involved. Built using the MERN stack (MongoDB, Express.js, React, Node.js), Red Wave incorporates robust features for user registration, blood donation requests, donor management, content management, and role-based access control.
 
 [Live Website Link](https://red-wave.netlify.app/)
 
-[Client Site Repository Link](https://github.com/abdul-muhaimin-toha/Red-Wave-Client)
+[Client Site Repository Link](https://github.com/programming-hero-web-course1/b9a12-client-side-abdul-muhaimin-toha)
 
-[Server Site Repository Link](https://github.com/abdul-muhaimin-toha/Red-Wave-Server)
+[Server Site Repository Link](https://github.com/programming-hero-web-course1/b9a12-server-side-abdul-muhaimin-toha)
 
 ## User Types
 
