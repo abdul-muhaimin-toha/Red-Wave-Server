@@ -1,95 +1,106 @@
 # Red Wave Server
 
-Admin Account:
-admin@gmail.com
-pass: 123123
+A user-friendly blood donation platform powered by the MERN stack, facilitating seamless connections between donors and recipients while incorporating robust features for user management and role-based access control.
 
-Volunteer Account:
-Volunteer@gmail.com
-pass: 123123
+## Links
 
-User Account:
-user@gmail.com
-pass: 123123
+- [Live Website](https://red-wave.netlify.app/)
+- [Client Site Repository](https://github.com/abdul-muhaimin-toha/Red-Wave-Client)
+- [Server Site Repository](https://github.com/abdul-muhaimin-toha/Red-Wave-Server)
 
-Red Wave is a user-friendly blood donation platform designed to facilitate seamless connections between blood donors and recipients. The platform aims to streamline the blood donation process, making it more efficient and accessible for everyone involved. Built using the MERN stack (MongoDB, Express.js, React, Node.js), Red Wave incorporates robust features for user registration, blood donation requests, donor management, content management, and role-based access control.
+## Account Credentials
 
-[Live Website Link](https://red-wave.netlify.app/)
+- **Admin Account:**
+  - **Email:** admin@gmail.com
+  - **Password:** 123123
 
-[Client Site Repository Link](https://github.com/abdul-muhaimin-toha/Red-Wave-Client)
+- **Volunteer Account:**
+  - **Email:** Volunteer@gmail.com
+  - **Password:** 123123
 
-[Server Site Repository Link](https://github.com/abdul-muhaimin-toha/Red-Wave-Server)
+- **User Account:**
+  - **Email:** user@gmail.com
+  - **Password:** 123123
+ 
+## Run Locally
+
+To run Red Wave locally, follow these steps:
+
+```sh
+npm install
+npm run dev
+```
 
 ## User Types
 
 1. **Regular User:**
-
-   - Can register on the platform.
+   - Register on the platform.
    - View and respond to blood donation requests.
-   - Maintain and update personal profile information.
+   - Manage personal profile information.
+   - Donate blood and money.
 
 2. **Volunteer:**
-
    - Manage blog posts (create, edit, publish/unpublish, delete).
    - Access all functionalities available to regular users.
 
 3. **Admin:**
-   - Access and manage all users on the platform.
-   - Block or unblock users, and assign roles (admin or volunteer).
+   - Manage all users on the platform.
+   - Assign roles (admin or volunteer).
    - Create, publish, unpublish, or delete blog posts.
    - Access all functionalities available to both regular users and volunteers.
 
 ## Key Features
 
-1. **User Registration and Authentication:**
+### User Management
 
-   - Secure user registration and login functionality.
-   - Role-based access control implemented using JWT tokens.
-   - The entire project utilizes shad/cn for styling and component design.
+- Secure registration and login.
+- Role-based access control with JWT tokens.
+- Modern styling and UI components with shad/cn.
 
-2. **Dashboard:**
+### Dashboard
 
-   - A personalized dashboard for users to manage their activities.
-   - Overview of blood donation requests, user profiles, and blog posts.
-   - Custom sidebar for easy navigation.
-   - Supports both dark and light modes for user convenience.
+- Personalized dashboard for managing activities.
+- Overview of blood donation requests, user profiles, and blog posts.
+- Customizable sidebar with dark and light modes.
 
-3. **Blood Donation Requests:**
+### Blood Donation
 
-   - Users can apply to donate blood.
-   - Requesters can accept or cancel donation applications.
+- Apply to donate blood.
+- Accept or cancel donation applications.
 
-4. **Search Functionality:**
+### Search Functionality
 
-   - Users can search for donors based on proximity or specific location input.
-   - Efficient filtering to find the nearest available donors.
+- Find donors based on proximity or location.
+- Efficient filtering for nearest available donors.
 
-5. **Fund Donation:**
+### Fund Donation
 
-   - Logged-in users can donate funds using a secure card payment system powered by Stripe.
-   - Fund management to support platform operations and related activities.
+- Secure fund donations via Stripe.
+- Management for supporting platform operations.
 
-6. **Profile Management:**
+### Profile Management
 
-   - Users can view and edit their profile information.
-   - Manage personal donation history and responses to donation requests.
+- Edit profile information.
+- Track donation history and responses.
 
-7. **Content Management:**
-   - Admins and volunteers can create and manage blog posts.
-   - Options to publish, unpublish, or delete content to keep the community informed and engaged.
-   - Includes a blog post page where users can create blogs using a text editor.
+### Content Management
+
+- Create, manage, and publish blog posts.
+- Engage community with informative content.
 
 ## Security
 
-- Implementation of JWT token-based authorization to ensure secure access to platform features.
-- Role-based access control to restrict functionalities based on user roles (regular user, volunteer, admin).
+- JWT token-based authorization for secure platform access.
+- Role-based restrictions ensure appropriate access levels.
 
 ## Technology Stack
 
-- **Database:** MongoDB for storing user data and post information.
-- **Backend:** Node.js, Express.js, with jwt for handling server-side logic and API endpoints.
-- **Frontend:** React for building the user interface and providing a seamless browsing experience.
-- **Payment Integration:** Stripe for secure card payments
+Red Wave leverages a powerful technology stack to deliver its features:
+
+- **Database:** MongoDB for flexible and scalable data storage.
+- **Backend:** Node.js and Express.js provide a robust foundation for server-side logic and API development.
+- **Frontend:** React offers a dynamic and responsive user interface for seamless user interactions.
+- **Payment Integration:** Stripe ensures secure and efficient online payment processing.
 - **Authentication:** JWT (JSON Web Tokens) for secure and scalable user authentication.
 
 ## Key npm Packages
