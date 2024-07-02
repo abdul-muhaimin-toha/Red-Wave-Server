@@ -105,13 +105,4 @@ Red Wave leverages a powerful technology stack to deliver its features:
 
 ## Npm Packages used in this project
 
-- tanstack/react-query
-- react-hook-form
-- stripe/react-stripe-js
-- axios
-- react-helmet-async
-- jsonwebtoken
-- firebase
-- date-fns
-- jodit-react
-- react-to-print
+`tanstack/react-query`, `react-hook-form`, `stripe/react-stripe-js`, `axios`, `react-helmet-async`, `jsonwebtoken`, `firebase`, `date-fns`, `jodit-react`, `react-to-print`
